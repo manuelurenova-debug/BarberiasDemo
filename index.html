@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barbería Demo – Cortes de Precisión en Málaga</title>
+  <meta name="description" content="Barbería Demo: el arte del corte clásico en el centro de Málaga. Cortes, barba, tratamientos y combos. Reserva tu cita por WhatsApp." />
+  <meta property="og:title" content="Barbería Demo – Cortes de Precisión" />
+  <meta property="og:description" content="Barbería artesanal en Málaga. Fade, afeitado con navaja, barba completa y más." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=80" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:        #D4AF37;
+      --gold-dark:   #A8880E;
+      --gold-light:  #F0D878;
+      --red:         #8B2020;
+      --bg:          #080808;
+      --bg2:         #111111;
+      --bg3:         #1a1a1a;
+      --text:        #f1f1f1;
+      --text-muted:  #a0a0a0;
+      --glass:       rgba(255,255,255,0.04);
+      --glass-border:rgba(255,255,255,0.10);
+      --radius:      16px;
+    }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; max-width: 100%; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; max-width: 100%; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+    /* ── UTILITY ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    .section-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 60px;
+      color: var(--gold);
+      font-size: 1.2rem;
+    }
+    .section-line::before, .section-line::after {
+      content: '';
+      height: 1px;
+      width: 80px;
+      background: linear-gradient(to right, transparent, var(--gold));
+    }
+    .section-line::after { background: linear-gradient(to left, transparent, var(--gold)); }
+
+    .glass {
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-decoration: none;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+      color: #080808;
+      box-shadow: 0 4px 24px rgba(212,175,55,0.35);
+    }
+    .btn-gold:hover {
+      transform: scale(1.06) translateY(-2px);
+      box-shadow: 0 8px 32px rgba(212,175,55,0.55);
+    }
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.5);
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: scale(1.06) translateY(-2px);
+    }
+
+    /* ── SCROLL ANIM ── */
+    .anim-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .anim-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── NAVBAR ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 18px 0;
+      transition: all 0.4s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(8,8,8,0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 10px 0;
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: #080808;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta { margin-left: 16px; padding: 10px 22px; font-size: 0.82rem; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: translateX(-10px); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0; right: -100%;
+      width: min(320px, 85vw);
+      height: 100vh;
+      background: rgba(10,10,10,0.98);
+      backdrop-filter: blur(20px);
+      z-index: 999;
+      padding: 80px 32px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      border-left: 1px solid var(--glass-border);
+      transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .mobile-drawer.open { right: 0; }
+    .drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 998;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+    .mobile-drawer a {
+      color: var(--text);
+      text-decoration: none;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 16px;
+      transition: color 0.2s;
+    }
+    .mobile-drawer a:hover { color: var(--gold); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── HERO ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 620px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: -20%;
+      background-image: url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1920&q=90');
+      background-size: cover;
+      background-position: center;
+      will-change: transform;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 55%, rgba(0,0,0,0.75) 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 820px;
+      padding: 0 24px;
+      animation: heroEnter 1s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes heroEnter {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212,175,55,0.12);
+      border: 1px solid rgba(212,175,55,0.4);
+      border-radius: 50px;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gold-light);
+      margin-bottom: 28px;
+      letter-spacing: 1px;
+      animation: heroEnter 1s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(3.2rem, 10vw, 7.5rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      line-height: 0.95;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #fff 0%, var(--gold) 55%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: heroEnter 1s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-h1-sub {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.8rem);
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 8px;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 24px;
+      animation: heroEnter 1s 0.25s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 10px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      animation: heroEnter 1s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-address {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 42px;
+      animation: heroEnter 1s 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: heroEnter 1s 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-scroll-arrow {
+      position: absolute;
+      bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: bounce 2.5s infinite;
+    }
+    .hero-scroll-arrow svg { width: 20px; height: 20px; }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── STATS ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #stats {
+      background: var(--bg2);
+      padding: 72px 0;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+    }
+    .stat-item {
+      text-align: center;
+      padding: 24px 16px;
+      position: relative;
+    }
+    .stat-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 20%; bottom: 20%;
+      width: 1px;
+      background: var(--glass-border);
+    }
+    .stat-num {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 500;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── SERVICIOS ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #servicios { padding: 100px 0; }
+
+    .menu-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 52px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 28px;
+      border-radius: 50px;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text-muted);
+      transition: all 0.3s;
+    }
+    .tab-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      border-color: transparent;
+      color: #080808;
+      font-weight: 700;
+      box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .service-card {
+      background: var(--bg2);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s, border-color 0.3s;
+      position: relative;
+    }
+    .service-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.5);
+      border-color: rgba(212,175,55,0.3);
+    }
+    .service-card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .service-card:hover .service-card-img { transform: scale(1.06); }
+    .service-card-img-wrap { overflow: hidden; position: relative; }
+
+    .card-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      padding: 5px 14px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      z-index: 1;
+    }
+    .badge-popular { background: var(--gold); color: #080808; }
+    .badge-new     { background: #1E8A4C; color: #fff; }
+    .badge-exclusive { background: var(--red); color: #fff; }
+    .badge-save    { background: #1A5276; color: #fff; }
+    .badge-best    { background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: #080808; }
+    .badge-vip     { background: #4A235A; color: var(--gold-light); }
+
+    .service-card-body { padding: 20px; }
+    .service-card-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .service-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .service-card-price {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .service-card-dur {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .service-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+    .service-card-cta {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      transition: gap 0.2s;
+    }
+    .service-card:hover .service-card-cta { gap: 10px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── NOSOTROS / EQUIPO ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #nosotros {
+      padding: 100px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-text .section-title { text-align: left; }
+    .about-text .section-line { justify-content: flex-start; margin-bottom: 24px; }
+    .about-text .section-line::before { display: none; }
+    .about-desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 32px;
+    }
+    .about-pillars { display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px; }
+    .pillar {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px 20px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+    }
+    .pillar-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      width: 42px; height: 42px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pillar-text strong {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .pillar-text span { font-size: 0.82rem; color: var(--text-muted); }
+
+    .about-img-wrap { position: relative; }
+    .about-img {
+      width: 100%;
+      border-radius: var(--radius);
+      display: block;
+      object-fit: cover;
+      height: 420px;
+    }
+    .about-img-badge {
+      position: absolute;
+      bottom: -20px; left: -20px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #080808;
+      padding: 20px 24px;
+      border-radius: var(--radius);
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      line-height: 1;
+      box-shadow: 0 8px 32px rgba(212,175,55,0.4);
+    }
+    .about-img-badge span { display: block; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; margin-top: 2px; }
+
+    /* Equipo */
+    .team-section { margin-top: 80px; }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .team-card {
+      text-align: center;
+      padding: 28px 20px 24px;
+      background: var(--bg3);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .team-card:hover { border-color: rgba(212,175,55,0.3); transform: translateY(-4px); }
+    .team-avatar {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--glass-border);
+      margin: 0 auto 16px;
+      display: block;
+      transition: border-color 0.3s;
+    }
+    .team-card:hover .team-avatar { border-color: var(--gold); }
+    .team-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .team-role { font-size: 0.8rem; color: var(--gold); margin-bottom: 6px; letter-spacing: 0.5px; }
+    .team-bio { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── RESERVAR CITA ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #cita { padding: 100px 0; }
+    .booking-card {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 48px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 10px; }
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .form-input {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212,175,55,0.1); }
+    .form-input option { background: #1a1a1a; }
+    select.form-input { cursor: pointer; }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text-muted);
+      transition: all 0.25s;
+      font-family: 'Inter', sans-serif;
+    }
+    .chip:hover { border-color: var(--gold); color: var(--gold); }
+    .chip.active {
+      background: rgba(212,175,55,0.15);
+      border-color: var(--gold);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .time-section-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .time-group { margin-bottom: 14px; }
+
+    .wa-btn {
+      width: 100%;
+      padding: 18px 32px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #25D366 0%, #1aab52 100%);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.3s;
+      margin-top: 8px;
+      box-shadow: 0 4px 24px rgba(37,211,102,0.3);
+    }
+    .wa-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(37,211,102,0.45);
+    }
+    .wa-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+
+    .divider { height: 1px; background: var(--glass-border); margin: 28px 0; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── GALERÍA ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #galeria {
+      padding: 100px 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--glass-border);
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      cursor: pointer;
+      aspect-ratio: 4/3;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block;
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.55);
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s;
+    }
+    .gallery-overlay svg { width: 36px; height: 36px; color: #fff; }
+    .gallery-overlay span {
+      position: absolute;
+      bottom: 16px; left: 16px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.96);
+      z-index: 2000;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 88vh;
+      border-radius: 12px;
+      object-fit: contain;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+      transition: opacity 0.2s;
+    }
+    .lb-close {
+      position: absolute;
+      top: 24px; right: 24px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .lb-close:hover { background: rgba(255,255,255,0.2); }
+    .lb-btn {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .lb-btn:hover { background: rgba(212,175,55,0.2); border-color: var(--gold); }
+    .lb-prev { left: 24px; }
+    .lb-next { right: 24px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── OPINIONES ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    #opiniones {
+      padding: 100px 0;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .carousel-outer {
+      position: relative;
+      overflow: hidden;
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .carousel-page {
+      min-width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 0 4px 4px;
+    }
+    .review-card {
+      background: var(--bg2);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .review-card:hover { border-color: rgba(212,175,55,0.25); transform: translateY(-3px); }
+    .review-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .review-avatar {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #080808;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .review-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
+    .review-date { font-size: 0.78rem; color: var(--text-muted); }
+    .review-stars { color: var(--gold); font-size: 0.95rem; margin-bottom: 10px; letter-spacing: 1px; }
+    .review-text { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; font-style: italic; }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .carousel-arrow {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .carousel-arrow:hover { background: rgba(212,175,55,0.15); border-color: var(--gold); color: var(--gold); }
+    .carousel-dots { display: flex; gap: 8px; }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--glass-border);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .dot.active { background: var(--gold); transform: scale(1.3); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── FOOTER ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    footer {
+      background: var(--bg2);
+      padding: 72px 0 32px;
+      border-top: 1px solid var(--glass-border);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.5fr;
+      gap: 60px;
+      margin-bottom: 48px;
+    }
+    .footer-brand .nav-logo { margin-bottom: 16px; display: inline-flex; }
+    .footer-brand p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; max-width: 300px; }
+    .social-links { display: flex; gap: 12px; }
+    .social-link {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: all 0.2s;
+      color: var(--text-muted);
+    }
+    .social-link:hover { background: rgba(212,175,55,0.12); border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+    .footer-col h4 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    .schedule-list { display: flex; flex-direction: column; gap: 8px; }
+    .schedule-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .schedule-row.today { color: var(--text); font-weight: 500; }
+    .schedule-row .day { }
+    .schedule-row .hours { color: var(--gold); }
+    .schedule-row .closed { color: #666; }
+
+    .footer-contact { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .contact-item span { font-size: 1rem; }
+
+    .status-open  { color: #4CAF50; font-size: 0.78rem; font-weight: 600; }
+    .status-closed { color: #F44336; font-size: 0.78rem; font-weight: 600; }
+
+    .footer-bottom {
+      border-top: 1px solid var(--glass-border);
+      padding-top: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p { font-size: 0.82rem; color: var(--text-muted); }
+    .footer-bottom a { color: var(--gold); text-decoration: none; }
+
+    /* ── FLOATING WA ── */
+    .float-wa {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      z-index: 900;
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      background: #25D366;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(37,211,102,0.4);
+      animation: waFloat 3s ease-in-out infinite;
+      text-decoration: none;
+    }
+    .float-wa svg { width: 28px; height: 28px; }
+    @keyframes waFloat {
+      0%,100% { transform: translateY(0); box-shadow: 0 4px 24px rgba(37,211,102,0.4); }
+      50%      { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(37,211,102,0.5); }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── SERVICE MODAL ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .sm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.82);
+      z-index: 1500;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+      padding: 16px;
+    }
+    .sm-overlay.open { opacity: 1; pointer-events: all; }
+    .sm-modal {
+      background: var(--bg2);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 460px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+      opacity: 0;
+    }
+    .sm-overlay.open .sm-modal { transform: scale(1) translateY(0); opacity: 1; }
+    .sm-modal::-webkit-scrollbar { width: 4px; }
+    .sm-modal::-webkit-scrollbar-thumb { background: var(--gold); }
+
+    .sm-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+      transition: background 0.2s;
+    }
+    .sm-close:hover { background: rgba(255,255,255,0.16); }
+    .sm-img { width: 100%; height: 240px; object-fit: cover; border-radius: 20px 20px 0 0; display: block; }
+    .sm-badge-wrap { position: absolute; top: 16px; left: 16px; }
+
+    .sm-body { padding: 28px; }
+    .sm-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .sm-name { font-family: 'Oswald', sans-serif; font-size: 1.4rem; font-weight: 700; flex: 1; letter-spacing: 0.5px; }
+    .sm-price-block { text-align: right; }
+    .sm-price { font-family: 'Oswald', sans-serif; font-size: 1.6rem; font-weight: 700; color: var(--gold); display: block; }
+    .sm-duration { font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; justify-content: flex-end; margin-top: 2px; }
+    .sm-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.65; margin-bottom: 22px; }
+    .sm-section-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; }
+    .sm-includes { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+    .sm-include-item { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: var(--text); }
+    .sm-include-item::before {
+      content: '✓';
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .sm-book-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #080808;
+      border: none;
+      cursor: pointer;
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+    }
+    .sm-book-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(212,175,55,0.45); }
+
+    /* ── TOAST ── */
+    .toast-container { position: fixed; bottom: 100px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      max-width: 320px;
+      display: flex; align-items: center; gap: 10px;
+      animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+    .toast-success { background: #1a3a25; border: 1px solid #2e7d4f; color: #7ee8a2; }
+    .toast-error   { background: #3a1a1a; border: 1px solid #7d2e2e; color: #e87e7e; }
+    .toast-info    { background: #1a2a3a; border: 1px solid #2e567d; color: #7eb8e8; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    /* ── RESPONSIVE ── */
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    @media (max-width: 1024px) {
+      .stats-grid    { grid-template-columns: repeat(2, 1fr); }
+      .stat-item:nth-child(2)::after { display: none; }
+      .about-grid    { grid-template-columns: 1fr; gap: 48px; }
+      .about-text .section-title { text-align: center; }
+      .about-text .section-line  { justify-content: center; }
+      .about-text .section-line::before { display: block; }
+      .team-grid     { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid   { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .footer-brand  { grid-column: span 2; }
+      .carousel-page { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+      .booking-card { padding: 28px 20px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    /* ── AVATAR ANÓNIMO ── */
+    .team-avatar-anon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      background: rgba(255,255,255,0.06);
+      border: 3px solid var(--glass-border);
+      transition: border-color 0.3s;
+    }
+    .team-card:hover .team-avatar-anon { border-color: var(--gold); }
+
+    /* ── MAPA / UBICACIÓN ── */
+    #ubicacion {
+      padding: 100px 0;
+      background: var(--bg);
+      border-top: 1px solid var(--glass-border);
+    }
+    .map-label {
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .map-iframe-wrap {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+    }
+    .map-iframe-wrap iframe {
+      display: block;
+      width: 100%;
+      height: 440px;
+      border: 0;
+      filter: invert(92%) hue-rotate(180deg) brightness(85%) contrast(90%);
+    }
+    .map-info { display: flex; flex-direction: column; gap: 24px; }
+    .map-open-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      width: fit-content;
+    }
+    .map-open-pill.open   { background: rgba(76,175,80,0.1);  border: 1px solid rgba(76,175,80,0.3);  color: #66BB6A; }
+    .map-open-pill.closed { background: rgba(244,67,54,0.1);  border: 1px solid rgba(244,67,54,0.3);  color: #EF5350; }
+    .map-info-block h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .map-info-block p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+    .map-info-block .demo-tag { color: #555; font-size: 0.8rem; }
+    @media (max-width: 768px) {
+      .map-grid { grid-template-columns: 1fr; }
+      .map-iframe-wrap iframe { height: 300px; }
+    }
+
+    @media (max-width: 580px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .carousel-page { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-brand { grid-column: span 1; }
+      .about-img { height: 260px; }
+      .about-img-badge { left: 0; bottom: -16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  NAVBAR                                        -->
+<!-- ══════════════════════════════════════════════ -->
+<nav id="navbar">
+  <div class="container nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="logo-icon">✂</div>
+      BARBERÍA <span>DEMO</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#nosotros">Equipo</a></li>
+      <li><a href="#galeria">Galería</a></li>
+      <li><a href="#opiniones">Opiniones</a></li>
+      <li><a href="#ubicacion">Ubicación</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <a href="#cita" class="btn btn-gold nav-cta">Reservar Cita</a>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<nav class="mobile-drawer" id="mobileDrawer">
+  <a href="#servicios" class="drawer-link">Servicios</a>
+  <a href="#nosotros"  class="drawer-link">Equipo</a>
+  <a href="#cita"      class="drawer-link">Reservar Cita</a>
+  <a href="#galeria"   class="drawer-link">Galería</a>
+  <a href="#opiniones" class="drawer-link">Opiniones</a>
+  <a href="#ubicacion" class="drawer-link">Ubicación</a>
+  <a href="#contacto"  class="drawer-link">Contacto</a>
+</nav>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  HERO                                          -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✂️ Desde 2016 · Málaga Centro</div>
+    <h1 class="hero-h1">BARBERÍA</h1>
+    <p class="hero-h1-sub">DEMO</p>
+    <p class="hero-sub">Donde el arte y la tradición se unen</p>
+    <p class="hero-address">📍 Calle del Maestro Barbero, 7 · 📞 999 99 99 99</p>
+    <div class="hero-btns">
+      <a href="#cita" class="btn btn-gold">✂️ Reservar Cita</a>
+      <a href="#servicios" class="btn btn-outline">Ver Servicios</a>
+    </div>
+  </div>
+  <div class="hero-scroll-arrow">
+    <span>SCROLL</span>
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  STATS                                         -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item anim-up">
+        <div class="stat-num"><span class="counter" data-target="3200">0</span>+</div>
+        <div class="stat-label">Clientes Satisfechos</div>
+      </div>
+      <div class="stat-item anim-up" style="transition-delay:.1s">
+        <div class="stat-num"><span class="counter" data-target="8">0</span></div>
+        <div class="stat-label">Años de Experiencia</div>
+      </div>
+      <div class="stat-item anim-up" style="transition-delay:.2s">
+        <div class="stat-num"><span class="counter" data-target="4">0</span></div>
+        <div class="stat-label">Barberos Expertos</div>
+      </div>
+      <div class="stat-item anim-up" style="transition-delay:.3s">
+        <div class="stat-num"><span class="counter" data-target="498">0</span></div>
+        <div class="stat-label">Reseñas ⭐⭐⭐⭐⭐</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SERVICIOS                                     -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="servicios">
+  <div class="container">
+    <h2 class="section-title gradient-text anim-up">Nuestros Servicios</h2>
+    <div class="section-line anim-up" style="transition-delay:.1s">✂️✂️✂️</div>
+
+    <div class="menu-tabs anim-up" style="transition-delay:.15s">
+      <button class="tab-btn active" data-cat="cortes">✂️ Cortes</button>
+      <button class="tab-btn" data-cat="barba">🪒 Barba</button>
+      <button class="tab-btn" data-cat="tratamientos">✨ Tratamientos</button>
+      <button class="tab-btn" data-cat="combos">🎁 Combos</button>
+    </div>
+
+    <div class="services-grid" id="servicesGrid"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  NOSOTROS / EQUIPO                             -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="nosotros">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text anim-up">
+        <h2 class="section-title">Pasión por el <br><span class="gradient-text">Corte Perfecto</span></h2>
+        <div class="section-line" style="margin-bottom:28px">✂️</div>
+        <p class="about-desc">
+          Nacimos en 2016 con una misión clara: recuperar el arte del barbero tradicional y llevarlo al siglo XXI.
+          En Barbería Noble cada corte es único, cada afeitado es una ceremonia. Nuestro equipo de expertos
+          combina técnicas clásicas con las últimas tendencias para que salgas sintiéndote extraordinario.
+        </p>
+        <p class="about-desc" style="margin-top: -16px">
+          Usamos exclusivamente productos profesionales de primera calidad —aceites, bálsamos y champús—
+          porque tu imagen merece lo mejor.
+        </p>
+        <div class="about-pillars">
+          <div class="pillar">
+            <div class="pillar-icon">✂️</div>
+            <div class="pillar-text">
+              <strong>Precisión Artesanal</strong>
+              <span>Cada línea, cada degradado, ejecutado con maestría absoluta.</span>
+            </div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">🪒</div>
+            <div class="pillar-text">
+              <strong>Técnica Clásica</strong>
+              <span>Afeitados con navaja y rituales de barbero de toda la vida.</span>
+            </div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-icon">💎</div>
+            <div class="pillar-text">
+              <strong>Productos Premium</strong>
+              <span>Solo marcas de alta gama para el mejor cuidado de tu cabello y barba.</span>
+            </div>
+          </div>
+        </div>
+        <a href="#cita" class="btn btn-gold">Reservar Ahora</a>
+      </div>
+      <div class="about-img-wrap anim-up" style="transition-delay:.15s">
+        <img
+          class="about-img"
+          src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80"
+          alt="Interior de Barbería Noble"
+        />
+        <div class="about-img-badge">
+          8
+          <span>AÑOS DE</span>
+          <span>EXCELENCIA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipo -->
+    <div class="team-section">
+      <h2 class="section-title anim-up" style="margin-bottom:16px">Nuestro <span class="gradient-text">Equipo</span></h2>
+      <div class="section-line anim-up" style="transition-delay:.1s">💈</div>
+      <div class="team-grid">
+        <div class="team-card anim-up" style="transition-delay:.1s">
+          <div class="team-avatar team-avatar-anon">👤</div>
+          <div class="team-name">Roberto García</div>
+          <div class="team-role">Fundador & Master Barber</div>
+          <div class="team-bio">12 años de experiencia. Especialista en fades clásicos y cortes a tijera. Alma de la barbería.</div>
+        </div>
+        <div class="team-card anim-up" style="transition-delay:.2s">
+          <div class="team-avatar team-avatar-anon">👤</div>
+          <div class="team-name">Marco Jiménez</div>
+          <div class="team-role">Especialista en Barba</div>
+          <div class="team-bio">Artesano del afeitado con navaja. Campeón regional de barbería 2022. La barba perfecta, su obsesión.</div>
+        </div>
+        <div class="team-card anim-up" style="transition-delay:.3s">
+          <div class="team-avatar team-avatar-anon">👤</div>
+          <div class="team-name">Elena Morales</div>
+          <div class="team-role">Tratamientos & Color</div>
+          <div class="team-bio">Formada en Milán y Madrid. Experta en tratamientos capilares y tendencias de coloración masculina.</div>
+        </div>
+        <div class="team-card anim-up" style="transition-delay:.4s">
+          <div class="team-avatar team-avatar-anon">👤</div>
+          <div class="team-name">Javi Santos</div>
+          <div class="team-role">Fade Expert</div>
+          <div class="team-bio">El artista del degradado. Sus transiciones son impecables. Especialista en los estilos más modernos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  RESERVAR CITA                                 -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="cita">
+  <div class="container">
+    <h2 class="section-title gradient-text anim-up">Reserva tu Cita</h2>
+    <div class="section-line anim-up" style="transition-delay:.1s">📅</div>
+
+    <div class="booking-card glass anim-up" style="transition-delay:.15s">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Elige Barbero</label>
+          <div class="chips" id="barberChips">
+            <button class="chip active" data-val="Cualquiera">Cualquiera</button>
+            <button class="chip" data-val="Roberto">Roberto</button>
+            <button class="chip" data-val="Marco">Marco</button>
+            <button class="chip" data-val="Elena">Elena</button>
+            <button class="chip" data-val="Javi">Javi</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bookDate">Fecha *</label>
+          <input type="date" id="bookDate" class="form-input" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="grid-column: span 2">
+          <label class="form-label" for="bookService">Servicio *</label>
+          <select id="bookService" class="form-input">
+            <option value="">— Selecciona un servicio —</option>
+            <optgroup label="✂️ Cortes">
+              <option value="Corte Clásico – 18€ (30 min)">Corte Clásico – 18€ (30 min)</option>
+              <option value="Fade / Degradado – 22€ (40 min)">Fade / Degradado – 22€ (40 min)</option>
+              <option value="Corte + Lavado – 28€ (50 min)">Corte + Lavado – 28€ (50 min)</option>
+              <option value="Corte Infantil – 14€ (25 min)">Corte Infantil – 14€ (25 min)</option>
+            </optgroup>
+            <optgroup label="🪒 Barba">
+              <option value="Arreglo de Barba – 15€ (20 min)">Arreglo de Barba – 15€ (20 min)</option>
+              <option value="Afeitado Clásico Navaja – 25€ (35 min)">Afeitado Clásico Navaja – 25€ (35 min)</option>
+              <option value="Barba Completa – 30€ (45 min)">Barba Completa – 30€ (45 min)</option>
+            </optgroup>
+            <optgroup label="✨ Tratamientos">
+              <option value="Hidratación Capilar – 20€ (30 min)">Hidratación Capilar – 20€ (30 min)</option>
+              <option value="Tratamiento Anticaída – 35€ (45 min)">Tratamiento Anticaída – 35€ (45 min)</option>
+            </optgroup>
+            <optgroup label="🎁 Combos">
+              <option value="Combo Caballero – 35€ (55 min)">Combo Caballero – 35€ (55 min)</option>
+              <option value="Combo Premium – 50€ (80 min)">Combo Premium – 50€ (80 min)</option>
+              <option value="Combo VIP – 65€ (100 min)">Combo VIP – 65€ (100 min)</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:24px">
+        <label class="form-label">Hora *</label>
+        <div class="time-group">
+          <div class="time-section-label">☀️ Mañana</div>
+          <div class="chips" id="timeChipsMorning">
+            <button class="chip time-chip" data-time="9:00">9:00</button>
+            <button class="chip time-chip" data-time="9:30">9:30</button>
+            <button class="chip time-chip" data-time="10:00">10:00</button>
+            <button class="chip time-chip" data-time="10:30">10:30</button>
+            <button class="chip time-chip" data-time="11:00">11:00</button>
+            <button class="chip time-chip" data-time="11:30">11:30</button>
+            <button class="chip time-chip" data-time="12:00">12:00</button>
+            <button class="chip time-chip" data-time="12:30">12:30</button>
+          </div>
+        </div>
+        <div class="time-group" style="margin-top:12px">
+          <div class="time-section-label">🌆 Tarde</div>
+          <div class="chips" id="timeChipsAfternoon">
+            <button class="chip time-chip" data-time="16:00">16:00</button>
+            <button class="chip time-chip" data-time="16:30">16:30</button>
+            <button class="chip time-chip" data-time="17:00">17:00</button>
+            <button class="chip time-chip" data-time="17:30">17:30</button>
+            <button class="chip time-chip" data-time="18:00">18:00</button>
+            <button class="chip time-chip" data-time="18:30">18:30</button>
+            <button class="chip time-chip" data-time="19:00">19:00</button>
+            <button class="chip time-chip" data-time="19:30">19:30</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="bookName">Nombre *</label>
+          <input type="text" id="bookName" class="form-input" placeholder="ej. Carlos García" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bookPhone">Teléfono</label>
+          <input type="tel" id="bookPhone" class="form-input" placeholder="ej. 612 345 678" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:28px">
+        <label class="form-label" for="bookNotes">Notas adicionales</label>
+        <textarea id="bookNotes" class="form-input" rows="3" placeholder="Peticiones especiales, estilo de referencia, información sobre tu cabello..."></textarea>
+      </div>
+
+      <button class="wa-btn" onclick="sendWhatsApp()">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        SOLICITAR CITA POR WHATSAPP
+      </button>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  GALERÍA                                       -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="galeria">
+  <div class="container">
+    <h2 class="section-title anim-up">Nuestra <span class="gradient-text">Galería</span></h2>
+    <div class="section-line anim-up" style="transition-delay:.1s">📸</div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-btn lb-prev" id="lbPrev">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+  <button class="lb-btn lb-next" id="lbNext">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  OPINIONES                                     -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="opiniones">
+  <div class="container">
+    <h2 class="section-title anim-up">Lo que dicen nuestros <span class="gradient-text">Clientes</span></h2>
+    <div class="section-line anim-up" style="transition-delay:.1s">⭐</div>
+
+    <div class="carousel-outer" id="carouselOuter">
+      <div class="carousel-track" id="carouselTrack">
+        <!-- Página 1: 3 reseñas -->
+        <div class="carousel-page">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">A</div>
+              <div><div class="review-name">Alejandro M.</div><div class="review-date">Hace 2 días</div></div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">"El fade que me hizo Roberto es el mejor que he tenido. Precisión brutal, ambiente genial y precio muy justo. Ya soy cliente fijo."</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">D</div>
+              <div><div class="review-name">David R.</div><div class="review-date">Hace 1 semana</div></div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">"El afeitado con navaja es una experiencia única. Toalla caliente, bálsamo, atención de lujo. Marco es un artista. Muy recomendable."</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">S</div>
+              <div><div class="review-name">Sergio P.</div><div class="review-date">Hace 2 semanas</div></div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">"El Combo Premium es una pasada. Salí como nuevo del trabajo. El local tiene un ambiente increíble y el equipo es muy profesional."</p>
+          </div>
+        </div>
+        <!-- Página 2: 3 reseñas -->
+        <div class="carousel-page">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">C</div>
+              <div><div class="review-name">Carlos V.</div><div class="review-date">Hace 3 semanas</div></div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">"Llevo 4 años viniendo a Barbería Noble. Siempre impecable. Marco tiene unas manos mágicas con la barba. No me iría a ningún otro sitio."</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">M</div>
+              <div><div class="review-name">Miguel Á.</div><div class="review-date">Hace 1 mes</div></div>
+            </div>
+            <div class="review-stars">★★★★★</div>
+            <p class="review-text">"Traje a mi hijo al Corte Infantil y quedó encantado. El personal es muy paciente, el resultado perfecto y encima le dieron una golosina."</p>
+          </div>
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">R</div>
+              <div><div class="review-name">Raúl T.</div><div class="review-date">Hace 1 mes</div></div>
+            </div>
+            <div class="review-stars">★★★★☆</div>
+            <p class="review-text">"Muy buena relación calidad-precio. El tratamiento de hidratación capilar me dejó el pelo como nuevo. Volveré a probar el Combo Caballero."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-controls">
+      <button class="carousel-arrow" id="carouselPrev">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-arrow" id="carouselNext">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  DÓNDE NOS ENCUENTRAS                          -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="ubicacion">
+  <div class="container">
+    <p class="map-label anim-up">Encuéntranos</p>
+    <h2 class="section-title anim-up" style="transition-delay:.05s">¿Dónde nos <span class="gradient-text">Encuentras?</span></h2>
+    <div class="section-line anim-up" style="transition-delay:.1s">📍</div>
+
+    <div class="map-grid">
+      <div class="map-iframe-wrap anim-up" style="transition-delay:.1s">
+        <iframe
+          src="https://maps.google.com/maps?q=36.720,-4.420&hl=es&z=15&output=embed"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <div class="map-info anim-up" style="transition-delay:.2s">
+        <div class="map-open-pill open" id="mapOpenPill">● Abierto ahora</div>
+
+        <div class="map-info-block">
+          <h3>Horario</h3>
+          <p>Lun – Vie: 9:00 – 20:00<br>Sábado: 9:00 – 18:00<br>Domingo: Cerrado</p>
+        </div>
+
+        <div class="map-info-block">
+          <h3>Dirección</h3>
+          <p>Calle del Maestro Barbero, 7 <span class="demo-tag">(demo)</span></p>
+        </div>
+
+        <div class="map-info-block">
+          <h3>Teléfono</h3>
+          <p style="color:var(--gold)">999 99 99 99 <span class="demo-tag">(demo)</span></p>
+        </div>
+
+        <a href="#cita" class="btn btn-gold" style="margin-top:8px">✂️ Reservar Cita</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  FOOTER                                        -->
+<!-- ══════════════════════════════════════════════ -->
+<footer id="contacto">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#hero" class="nav-logo" style="margin-bottom:16px; display:inline-flex">
+          <div class="logo-icon">✂</div>
+          BARBERÍA <span>DEMO</span>
+        </a>
+        <p>Barbería artesanal en el corazón de Málaga. Cortes, barba y tratamientos premium para el hombre que cuida su imagen.</p>
+        <div class="social-links">
+          <a href="#" class="social-link" title="Instagram">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a href="#" class="social-link" title="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="social-link" title="TikTok">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.25 8.25 0 004.84 1.56V6.79a4.85 4.85 0 01-1.07-.1z"/></svg>
+          </a>
+          <a href="#" class="social-link" title="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <div class="footer-contact">
+          <div class="contact-item"><span>📍</span> Calle del Maestro Barbero, 7 <em style="color:#555">(demo)</em></div>
+          <div class="contact-item"><span>📞</span> 999 99 99 99 <em style="color:#555">(demo)</em></div>
+          <div class="contact-item"><span>✉️</span> manuelure.nova@gmail.com <em style="color:#555">(demo)</em></div>
+        </div>
+        <div class="divider"></div>
+        <div style="font-size:0.8rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Web creada por:</div>
+        <div class="footer-contact">
+          <div class="contact-item"><span>📞</span> +34 635 10 33 34</div>
+          <div class="contact-item"><span>✉️</span> manuelure.nova@gmail.com</div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Horario <span id="openStatus"></span></h4>
+        <div class="schedule-list">
+          <div class="schedule-row"><span class="day">Lunes – Viernes</span><span class="hours">9:00 – 20:00</span></div>
+          <div class="schedule-row"><span class="day">Sábado</span><span class="hours">9:00 – 18:00</span></div>
+          <div class="schedule-row"><span class="day">Domingo</span><span class="closed">Cerrado</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Barbería Demo · Todos los derechos reservados</p>
+      <p>Diseño web <a href="mailto:manuelure.nova@gmail.com">Manuel Ureña</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── FLOATING WA ── -->
+<a href="https://wa.me/34635103334" target="_blank" class="float-wa" title="Escríbenos por WhatsApp">
+  <svg viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+  </svg>
+</a>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SERVICE MODAL                                 -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="sm-overlay" id="smOverlay" onclick="handleSmOverlayClick(event)">
+  <div class="sm-modal" id="smModal">
+    <button class="sm-close" id="smClose">✕</button>
+    <img class="sm-img" id="smImg" src="" alt="" />
+    <div id="smBadgeWrap" style="position:absolute;top:16px;left:16px"></div>
+    <div class="sm-body">
+      <div class="sm-header">
+        <div class="sm-name" id="smName"></div>
+        <div class="sm-price-block">
+          <span class="sm-price" id="smPrice"></span>
+          <span class="sm-duration" id="smDuration">⏱ </span>
+        </div>
+      </div>
+      <p class="sm-desc" id="smDesc"></p>
+      <div class="sm-section-label">✅ ¿Qué incluye?</div>
+      <div class="sm-includes" id="smIncludes"></div>
+      <button class="sm-book-btn" onclick="bookFromModal()">✂️ Reservar este servicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                    -->
+<!-- ══════════════════════════════════════════════ -->
+<script>
+/* ── DATA ─────────────────────────────────────── */
+const SERVICES = [
+  // CORTES
+  { id:1, cat:'cortes', name:'Corte Clásico', price:'18€', duration:'30 min',
+    badge:null,
+    desc:'Corte tradicional con tijera y máquina. Acabado natural y elegante, perfectamente adaptado a tu tipo de cabello.',
+    img:'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80',
+    includes:['Consulta personalizada de estilo','Corte con tijera y/o máquina','Peinado final con productos','Asesoramiento sobre cuidado en casa'] },
+  { id:2, cat:'cortes', name:'Fade / Degradado', price:'22€', duration:'40 min',
+    badge:{label:'Más Popular', cls:'badge-popular'},
+    desc:'Degradado preciso a máquina con transición impecable. El estilo favorito de nuestros clientes, ejecutado con maestría.',
+    img:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&q=80',
+    includes:['Consulta de estilo y nivel de fade','Fade con múltiples guardas','Perfilado de línea y cuello','Producto de fijación premium'] },
+  { id:3, cat:'cortes', name:'Corte + Lavado', price:'28€', duration:'50 min',
+    badge:{label:'Recomendado', cls:'badge-save'},
+    desc:'Experiencia completa: lavado con champú de lujo, masaje capilar, corte a medida y secado profesional.',
+    img:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80',
+    includes:['Lavado con champú premium','Masaje capilar relajante','Corte personalizado','Secado y peinado final','Sérum de acabado'] },
+  { id:4, cat:'cortes', name:'Corte Infantil', price:'14€', duration:'25 min',
+    badge:null,
+    desc:'Corte especial para los más pequeños de la casa (hasta 12 años). Rápido, preciso y sin lloros.',
+    img:'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80',
+    includes:['Ambiente amigable para niños','Corte rápido y preciso','Peinado final','Golosina de regalo 🍬'] },
+  // BARBA
+  { id:5, cat:'barba', name:'Arreglo de Barba', price:'15€', duration:'20 min',
+    badge:null,
+    desc:'Perfilado, arreglo y definición de barba con tijera y navaja. Líneas perfectas que enmarcan tu cara.',
+    img:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80',
+    includes:['Análisis de forma facial','Perfilado con navaja','Arreglo con tijera','Aceite de barba nutritivo','Acabado y peinado'] },
+  { id:6, cat:'barba', name:'Afeitado Clásico Navaja', price:'25€', duration:'35 min',
+    badge:{label:'Exclusivo', cls:'badge-exclusive'},
+    desc:'La experiencia del afeitado tradicional con navaja de barbero. Un ritual que mereces vivir al menos una vez.',
+    img:'https://images.unsplash.com/photo-1534297635766-a262cdcb8ee4?w=600&q=80',
+    includes:['Aplicación de aceite pre-afeitado','Toalla caliente aromatizada','Afeitado con navaja profesional','Bálsamo aftershave hidratante','Masaje facial de cierre'] },
+  { id:7, cat:'barba', name:'Barba Completa', price:'30€', duration:'45 min',
+    badge:null,
+    desc:'El servicio de barba más completo: lavado, moldeado, arreglo, afeitado de contorno y tratamiento hidratante.',
+    img:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&q=80',
+    includes:['Lavado de barba con champú específico','Moldeado y arreglo con tijera','Afeitado de contorno con navaja','Mascarilla hidratante de barba','Aceite nutritivo y peinado final'] },
+  // TRATAMIENTOS
+  { id:8, cat:'tratamientos', name:'Hidratación Capilar', price:'20€', duration:'30 min',
+    badge:null,
+    desc:'Tratamiento intensivo de hidratación para cabellos secos, apagados o dañados. Tu cabello, transformado.',
+    img:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80',
+    includes:['Diagnóstico capilar previo','Mascarilla hidratante premium','Masaje nutritivo del cuero cabelludo','Aclarado y secado profesional','Consejos de mantenimiento'] },
+  { id:9, cat:'tratamientos', name:'Tratamiento Anticaída', price:'35€', duration:'45 min',
+    badge:{label:'Nuevo', cls:'badge-new'},
+    desc:'Protocolo especializado contra la caída del cabello con activos revitalizantes y técnicas de estimulación folicular.',
+    img:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80',
+    includes:['Análisis del cuero cabelludo','Ampollas anticaída de alta concentración','Masaje estimulante de la microcirculación','Loción revitalizante folicular','Plan de seguimiento personalizado'] },
+  // COMBOS
+  { id:10, cat:'combos', name:'Combo Caballero', price:'35€', duration:'55 min',
+    badge:{label:'Ahorra 3€', cls:'badge-save'},
+    desc:'Corte clásico más arreglo de barba. El dúo perfecto para estar siempre impecable, al mejor precio.',
+    img:'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80',
+    includes:['Corte clásico completo','Arreglo y perfilado de barba','Peinado final','Productos de acabado incluidos'] },
+  { id:11, cat:'combos', name:'Combo Premium', price:'50€', duration:'80 min',
+    badge:{label:'Más Completo', cls:'badge-best'},
+    desc:'La experiencia completa: corte con lavado, afeitado clásico con navaja y tratamiento capilar hidratante.',
+    img:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&q=80',
+    includes:['Corte con lavado y masaje','Afeitado clásico con navaja','Tratamiento de hidratación capilar','Masaje craneal 10 min','Copa de bienvenida 🥂'] },
+  { id:12, cat:'combos', name:'Combo VIP', price:'65€', duration:'100 min',
+    badge:{label:'VIP', cls:'badge-vip'},
+    desc:'La joya de la corona. Sesión VIP completa con todos nuestros mejores servicios. Para los que merecen lo mejor.',
+    img:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&q=80',
+    includes:['Corte fade premium con lavado','Afeitado clásico con navaja','Tratamiento anticaída completo','Masaje craneal y facial 15 min','Copa o bebida gourmet','Set de productos de regalo 🎁'] },
+];
+
+const GALLERY = [
+  { src:'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=80', alt:'Corte clásico' },
+  { src:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80', alt:'Fade perfecto' },
+  { src:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80', alt:'Interior de la barbería' },
+  { src:'https://images.unsplash.com/photo-1534297635766-a262cdcb8ee4?w=800&q=80', alt:'Afeitado con navaja' },
+  { src:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&q=80', alt:'Arreglo de barba' },
+  { src:'https://images.unsplash.com/photo-1512690459411-b9245aed614d?w=800&q=80', alt:'Herramientas del barbero' },
+];
+
+/* ── NAVBAR SCROLL ─────────────────────────────── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+/* ── PARALLAX ─────────────────────────────────── */
+const heroBg = document.getElementById('heroBg');
+window.addEventListener('scroll', () => {
+  if (heroBg) heroBg.style.transform = `translateY(${window.scrollY * 0.32}px)`;
+}, { passive: true });
+
+/* ── MOBILE DRAWER ────────────────────────────── */
+const hamburgerBtn  = document.getElementById('hamburgerBtn');
+const mobileDrawer  = document.getElementById('mobileDrawer');
+const drawerOverlay = document.getElementById('drawerOverlay');
+function toggleDrawer(force) {
+  const open = force !== undefined ? force : !mobileDrawer.classList.contains('open');
+  mobileDrawer.classList.toggle('open', open);
+  drawerOverlay.classList.toggle('open', open);
+  hamburgerBtn.classList.toggle('open', open);
+}
+hamburgerBtn.addEventListener('click', () => toggleDrawer());
+drawerOverlay.addEventListener('click', () => toggleDrawer(false));
+document.querySelectorAll('.drawer-link').forEach(a => a.addEventListener('click', () => toggleDrawer(false)));
+
+/* ── SCROLL ANIMATIONS ────────────────────────── */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.anim-up').forEach(el => io.observe(el));
+
+/* ── COUNTER ANIMATION ────────────────────────── */
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = +el.dataset.target;
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.floor(current).toLocaleString('es-ES');
+      if (current >= target) clearInterval(timer);
+    }, 25);
+    counterObs.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => counterObs.observe(el));
+
+/* ── SERVICES RENDER ──────────────────────────── */
+let currentCat = 'cortes';
+
+function renderServices(cat) {
+  const grid = document.getElementById('servicesGrid');
+  const filtered = SERVICES.filter(s => s.cat === cat);
+  grid.innerHTML = filtered.map(s => `
+    <div class="service-card anim-up" onclick="openServiceModal(${s.id})">
+      <div class="service-card-img-wrap">
+        ${s.badge ? `<div class="card-badge ${s.badge.cls}">${s.badge.label}</div>` : ''}
+        <img class="service-card-img" src="${s.img}" alt="${s.name}" loading="lazy" />
+      </div>
+      <div class="service-card-body">
+        <div class="service-card-name">${s.name}</div>
+        <div class="service-card-meta">
+          <span class="service-card-price">${s.price}</span>
+          <span class="service-card-dur">⏱ ${s.duration}</span>
+        </div>
+        <p class="service-card-desc">${s.desc}</p>
+        <div class="service-card-cta">Ver detalles <span>→</span></div>
+      </div>
+    </div>
+  `).join('');
+  document.querySelectorAll('#servicesGrid .anim-up').forEach(el => {
+    setTimeout(() => io.observe(el), 50);
+  });
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    renderServices(currentCat);
+  });
+});
+
+renderServices(currentCat);
+
+/* ── GALLERY RENDER ───────────────────────────── */
+(function renderGallery() {
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = GALLERY.map((img, i) => `
+    <div class="gallery-item" onclick="openLightbox(${i})">
+      <img src="${img.src}" alt="${img.alt}" loading="lazy" />
+      <div class="gallery-overlay">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+        </svg>
+        <span>${img.alt}</span>
+      </div>
+    </div>
+  `).join('');
+})();
+
+/* ── LIGHTBOX ─────────────────────────────────── */
+let lbIndex = 0;
+const lightbox   = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+
+function openLightbox(i) {
+  lbIndex = i;
+  lightboxImg.src = GALLERY[i].src;
+  lightboxImg.alt = GALLERY[i].alt;
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function lbGo(dir) {
+  lbIndex = (lbIndex + dir + GALLERY.length) % GALLERY.length;
+  lightboxImg.style.opacity = '0';
+  setTimeout(() => {
+    lightboxImg.src = GALLERY[lbIndex].src;
+    lightboxImg.alt = GALLERY[lbIndex].alt;
+    lightboxImg.style.opacity = '1';
+  }, 150);
+}
+
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbPrev').addEventListener('click', () => lbGo(-1));
+document.getElementById('lbNext').addEventListener('click', () => lbGo(1));
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft')  lbGo(-1);
+  if (e.key === 'ArrowRight') lbGo(1);
+});
+
+/* ── CAROUSEL ─────────────────────────────────── */
+(function initCarousel() {
+  const track = document.getElementById('carouselTrack');
+  const dotsEl = document.getElementById('carouselDots');
+  const pages = track.querySelectorAll('.carousel-page');
+  let current = 0;
+
+  pages.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(dot);
+  });
+
+  function goTo(i) {
+    current = i;
+    track.style.transform = `translateX(-${i * 100}%)`;
+    dotsEl.querySelectorAll('.dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
+  }
+
+  document.getElementById('carouselPrev').addEventListener('click', () => goTo((current - 1 + pages.length) % pages.length));
+  document.getElementById('carouselNext').addEventListener('click', () => goTo((current + 1) % pages.length));
+})();
+
+/* ── CHIPS LOGIC ──────────────────────────────── */
+function initChips(containerId, singleSelect = true) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (singleSelect) container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.toggle('active', singleSelect ? true : !chip.classList.contains('active'));
+    });
+  });
+}
+initChips('barberChips');
+['timeChipsMorning','timeChipsAfternoon'].forEach(id => {
+  const container = document.getElementById(id);
+  if (!container) return;
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+});
+
+/* ── SERVICE MODAL ────────────────────────────── */
+let currentModalService = null;
+
+function openServiceModal(id) {
+  const s = SERVICES.find(x => x.id === id);
+  if (!s) return;
+  currentModalService = s;
+  document.getElementById('smImg').src = s.img;
+  document.getElementById('smImg').alt = s.name;
+  document.getElementById('smName').textContent = s.name;
+  document.getElementById('smPrice').textContent = s.price;
+  document.getElementById('smDuration').innerHTML = `⏱ ${s.duration}`;
+  document.getElementById('smDesc').textContent = s.desc;
+  document.getElementById('smBadgeWrap').innerHTML = s.badge
+    ? `<span class="card-badge ${s.badge.cls}">${s.badge.label}</span>` : '';
+  document.getElementById('smIncludes').innerHTML = s.includes
+    .map(item => `<div class="sm-include-item">${item}</div>`).join('');
+  document.getElementById('smOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeServiceModal() {
+  document.getElementById('smOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleSmOverlayClick(e) {
+  if (e.target === document.getElementById('smOverlay')) closeServiceModal();
+}
+
+function bookFromModal() {
+  if (!currentModalService) return;
+  const sel = document.getElementById('bookService');
+  const opts = Array.from(sel.options);
+  const match = opts.find(o => o.value.startsWith(currentModalService.name));
+  if (match) sel.value = match.value;
+  closeServiceModal();
+  document.getElementById('cita').scrollIntoView({ behavior: 'smooth' });
+  showToast(`✂️ Servicio "${currentModalService.name}" preseleccionado`, 'info');
+}
+
+document.getElementById('smClose').addEventListener('click', closeServiceModal);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('smOverlay').classList.contains('open')) closeServiceModal();
+});
+
+/* ── WHATSAPP BOOKING ─────────────────────────── */
+function sendWhatsApp() {
+  const service = document.getElementById('bookService').value;
+  const date    = document.getElementById('bookDate').value;
+  const name    = document.getElementById('bookName').value.trim();
+  const phone   = document.getElementById('bookPhone').value.trim();
+  const time    = document.querySelector('.time-chip.active')?.dataset.time || '';
+  const barber  = document.querySelector('#barberChips .chip.active')?.dataset.val || 'Cualquiera';
+  const notes   = document.getElementById('bookNotes').value.trim();
+
+  if (!service) { showToast('Por favor, selecciona un servicio', 'error'); return; }
+  if (!date)    { showToast('Por favor, selecciona una fecha', 'error'); return; }
+  if (!time)    { showToast('Por favor, selecciona una hora', 'error'); return; }
+  if (!name)    { showToast('Por favor, escribe tu nombre', 'error'); return; }
+
+  const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString('es-ES', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  let msg = `✂️ *RESERVA CITA – BARBERÍA DEMO*\n\n`;
+  msg += `👤 *Nombre:* ${name}\n`;
+  if (phone) msg += `📱 *Teléfono:* ${phone}\n`;
+  msg += `💈 *Servicio:* ${service}\n`;
+  msg += `✂️ *Barbero preferido:* ${barber}\n`;
+  msg += `📅 *Fecha:* ${formattedDate}\n`;
+  msg += `⏰ *Hora solicitada:* ${time}\n`;
+  if (notes) msg += `📝 *Notas:* ${notes}\n`;
+  msg += `\n_Mensaje enviado desde la web · barberia-demo.es_`;
+
+  window.open(`https://wa.me/34635103334?text=${encodeURIComponent(msg)}`, '_blank');
+  showToast('¡Redirigiendo a WhatsApp! 💬', 'success');
+}
+
+/* ── TOAST ────────────────────────────────────── */
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.transition = 'opacity 0.4s'; toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 3200);
+}
+
+/* ── OPEN STATUS ──────────────────────────────── */
+(function updateOpenStatus() {
+  const SCHEDULE = [null, {o:9,c:20}, {o:9,c:20}, {o:9,c:20}, {o:9,c:20}, {o:9,c:20}, {o:9,c:18}];
+  const now = new Date();
+  const h = now.getHours() + now.getMinutes() / 60;
+  const today = SCHEDULE[now.getDay()];
+  const el = document.getElementById('openStatus');
+  const mapPill = document.getElementById('mapOpenPill');
+  const isOpen = today && h >= today.o && h < today.c;
+  if (el) {
+    if (!today) { el.innerHTML = '<span class="status-closed">● Cerrado hoy</span>'; }
+    else el.innerHTML = isOpen
+      ? `<span class="status-open">● Abierto ahora</span>`
+      : `<span class="status-closed">● Cerrado ahora</span>`;
+  }
+  if (mapPill) {
+    if (!today || !isOpen) {
+      mapPill.textContent = '● Cerrado ahora';
+      mapPill.className = 'map-open-pill closed';
+    } else {
+      mapPill.textContent = '● Abierto ahora';
+      mapPill.className = 'map-open-pill open';
+    }
+  }
+})();
+
+/* ── DATE MIN ─────────────────────────────────── */
+(function setMinDate() {
+  const input = document.getElementById('bookDate');
+  if (input) {
+    const today = new Date().toISOString().split('T')[0];
+    input.min = today;
+  }
+})();
+</script>
+</body>
+</html>
