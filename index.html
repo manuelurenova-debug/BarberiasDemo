@@ -743,8 +743,10 @@
     }
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
+      max-width: 860px;
+      margin: 0 auto;
     }
     .gallery-item {
       position: relative;
@@ -1554,6 +1556,48 @@
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  DÓNDE NOS ENCUENTRAS                          -->
+<!-- ══════════════════════════════════════════════ -->
+<section id="ubicacion">
+  <div class="container">
+    <p class="map-label anim-up">Encuéntranos</p>
+    <h2 class="section-title anim-up" style="transition-delay:.05s">¿Dónde nos <span class="gradient-text">Encuentras?</span></h2>
+    <div class="section-line anim-up" style="transition-delay:.1s">📍</div>
+
+    <div class="map-grid">
+      <div class="map-iframe-wrap anim-up" style="transition-delay:.1s">
+        <iframe
+          src="https://maps.google.com/maps?q=36.720,-4.420&hl=es&z=15&output=embed"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <div class="map-info anim-up" style="transition-delay:.2s">
+        <div class="map-open-pill open" id="mapOpenPill">● Abierto ahora</div>
+
+        <div class="map-info-block">
+          <h3>Horario</h3>
+          <p>Lun – Vie: 9:00 – 20:00<br>Sábado: 9:00 – 18:00<br>Domingo: Cerrado</p>
+        </div>
+
+        <div class="map-info-block">
+          <h3>Dirección</h3>
+          <p>Calle del Maestro Barbero, 7 <span class="demo-tag">(demo)</span></p>
+        </div>
+
+        <div class="map-info-block">
+          <h3>Teléfono</h3>
+          <p style="color:var(--gold)">999 99 99 99 <span class="demo-tag">(demo)</span></p>
+        </div>
+
+        <a href="#cita" class="btn btn-gold" style="margin-top:8px">✂️ Reservar Cita</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  OPINIONES                                     -->
 <!-- ══════════════════════════════════════════════ -->
 <section id="opiniones">
@@ -1627,48 +1671,6 @@
       <button class="carousel-arrow" id="carouselNext">
         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
       </button>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════ -->
-<!--  DÓNDE NOS ENCUENTRAS                          -->
-<!-- ══════════════════════════════════════════════ -->
-<section id="ubicacion">
-  <div class="container">
-    <p class="map-label anim-up">Encuéntranos</p>
-    <h2 class="section-title anim-up" style="transition-delay:.05s">¿Dónde nos <span class="gradient-text">Encuentras?</span></h2>
-    <div class="section-line anim-up" style="transition-delay:.1s">📍</div>
-
-    <div class="map-grid">
-      <div class="map-iframe-wrap anim-up" style="transition-delay:.1s">
-        <iframe
-          src="https://maps.google.com/maps?q=36.720,-4.420&hl=es&z=15&output=embed"
-          loading="lazy"
-          allowfullscreen
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
-      </div>
-      <div class="map-info anim-up" style="transition-delay:.2s">
-        <div class="map-open-pill open" id="mapOpenPill">● Abierto ahora</div>
-
-        <div class="map-info-block">
-          <h3>Horario</h3>
-          <p>Lun – Vie: 9:00 – 20:00<br>Sábado: 9:00 – 18:00<br>Domingo: Cerrado</p>
-        </div>
-
-        <div class="map-info-block">
-          <h3>Dirección</h3>
-          <p>Calle del Maestro Barbero, 7 <span class="demo-tag">(demo)</span></p>
-        </div>
-
-        <div class="map-info-block">
-          <h3>Teléfono</h3>
-          <p style="color:var(--gold)">999 99 99 99 <span class="demo-tag">(demo)</span></p>
-        </div>
-
-        <a href="#cita" class="btn btn-gold" style="margin-top:8px">✂️ Reservar Cita</a>
-      </div>
     </div>
   </div>
 </section>
@@ -1837,12 +1839,10 @@ const SERVICES = [
 ];
 
 const GALLERY = [
-  { src:'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=80', alt:'Corte clásico' },
   { src:'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80', alt:'Fade perfecto' },
   { src:'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80', alt:'Interior de la barbería' },
   { src:'https://images.unsplash.com/photo-1534297635766-a262cdcb8ee4?w=800&q=80', alt:'Afeitado con navaja' },
   { src:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800&q=80', alt:'Arreglo de barba' },
-  { src:'https://images.unsplash.com/photo-1512690459411-b9245aed614d?w=800&q=80', alt:'Herramientas del barbero' },
 ];
 
 /* ── NAVBAR SCROLL ─────────────────────────────── */
